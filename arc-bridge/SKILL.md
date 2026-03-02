@@ -1,19 +1,19 @@
 ---
 name: arc-bridge
-description: USDC 跨链桥接到 Arc Testnet（Bridge Kit）
+description: Bridge USDC to Arc Testnet via Circle Bridge Kit
 disable-model-invocation: true
 ---
 
-# USDC 跨链桥接到 Arc Testnet
+# Bridge USDC to Arc Testnet
 
-从 ETH Sepolia 桥接 USDC 到 Arc Testnet，使用 Circle Bridge Kit。
+Bridge USDC from ETH Sepolia to Arc Testnet using Circle Bridge Kit.
 
-## 前提
-- ETH Sepolia 上有 USDC（领取: https://faucet.circle.com）
-- ETH Sepolia 上有 ETH gas（领取: https://faucets.chain.link/sepolia）
-- .env 文件包含必要变量
+## Prerequisites
+- USDC on ETH Sepolia (claim from: https://faucet.circle.com)
+- ETH gas on ETH Sepolia (claim from: https://faucets.chain.link/sepolia)
+- .env file with required variables
 
-## 安装依赖
+## Install Dependencies
 
 ```bash
 mkdir -p ~/crosschain-transfer && cd ~/crosschain-transfer
@@ -21,27 +21,27 @@ npm init -y
 npm install @circle-fin/bridge-kit @circle-fin/adapter-circle-wallets @circle-fin/adapter-viem-v2 @circle-fin/developer-controlled-wallets dotenv viem
 ```
 
-在 package.json 添加 `"type": "module"`。
-复制 .env 文件到此目录。
+Add `"type": "module"` to package.json.
+Copy .env file to this directory.
 
-## 完整桥接脚本
+## Bridge Script
 
-将 [bridge.mjs](scripts/bridge.mjs) 复制到项目目录后运行：
+Copy [bridge.mjs](scripts/bridge.mjs) to the project directory and run:
 
 ```bash
 node bridge.mjs
 ```
 
-## 注意事项
-- Cast 钱包不在 Circle 系统内，**from** 用 castAdapter，**to** 用 circleAdapter 并指定 `address`
-- ETH Sepolia 确认需约 **15 分钟**，期间可做其他操作
-- Arc 上 USDC 是 native token（**18 decimals**），Sepolia 上是 **6 decimals**
-- 桥接完成后验证余额：
+## Notes
+- Cast wallet is not in the Circle system — use castAdapter for **from**, circleAdapter with `address` for **to**
+- ETH Sepolia confirmation takes ~**15 minutes**, you can do other tasks in the meantime
+- USDC on Arc is a native token (**18 decimals**), on Sepolia it's **6 decimals**
+- Verify balance after bridging:
   ```bash
   export PATH="$HOME/.foundry/bin:$PATH"
   cast balance $CAST_ADDRESS --rpc-url https://rpc.testnet.arc.network
-  # 返回 wei 值，除以 1e18 得到 USDC 数量
+  # Returns wei value, divide by 1e18 for USDC amount
   ```
 
-## 输出
-确认 3 个钱包的 Arc Testnet USDC 余额增加。
+## Output
+Confirm Arc Testnet USDC balance increased for all 3 wallets.

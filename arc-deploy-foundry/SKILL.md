@@ -1,17 +1,17 @@
 ---
 name: arc-deploy-foundry
-description: Foundry 合约部署到 Arc Testnet（5 个合约）
+description: Deploy 5 smart contracts to Arc Testnet via Foundry
 disable-model-invocation: true
 ---
 
-# Foundry 合约部署到 Arc Testnet
+# Deploy Smart Contracts to Arc Testnet via Foundry
 
-用 Foundry 部署 5 个智能合约到 Arc Testnet，全部归属 cast 钱包。
+Deploy 5 smart contracts to Arc Testnet using Foundry, all owned by the cast wallet.
 
-## Windows 注意事项
-- 每次使用 Foundry 前：`export PATH="$HOME/.foundry/bin:$PATH"`
+## Windows Notes
+- Set Foundry PATH before each use: `export PATH="$HOME/.foundry/bin:$PATH"`
 
-## Step 1: 初始化项目
+## Step 1: Initialize Project
 
 ```bash
 export PATH="$HOME/.foundry/bin:$PATH"
@@ -20,16 +20,16 @@ forge init . --force
 forge install OpenZeppelin/openzeppelin-contracts
 ```
 
-在 `foundry.toml` 中添加 remapping：
+Add remapping to `foundry.toml`:
 ```toml
 remappings = ["@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/"]
 ```
 
-删除 src/ 和 test/ 下的默认文件。
+Delete default files under src/ and test/.
 
-## Step 2: 创建 5 个合约
+## Step 2: Create 5 Contracts
 
-将以下合约文件复制到项目的 `src/` 目录：
+Copy the following contract files to the project's `src/` directory:
 
 - [HelloArchitect.sol](contracts/HelloArchitect.sol)
 - [ArcToken.sol](contracts/ArcToken.sol)
@@ -37,21 +37,21 @@ remappings = ["@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/"]
 - [ArcMultiToken.sol](contracts/ArcMultiToken.sol)
 - [ArcAirdrop.sol](contracts/ArcAirdrop.sol)
 
-## Step 3: 编译
+## Step 3: Compile
 
 ```bash
 forge build
 ```
-确保无报错。
+Ensure no errors.
 
-## Step 4: 逐个部署
+## Step 4: Deploy Each Contract
 
-从 .env 读取 CAST_PRIVATE_KEY，设置变量后逐个部署：
+Read CAST_PRIVATE_KEY from .env, set variables, then deploy one by one:
 
 ```bash
 export PATH="$HOME/.foundry/bin:$PATH"
 RPC="https://rpc.testnet.arc.network"
-PK="从.env读取"
+PK="<read from .env>"
 
 forge create src/HelloArchitect.sol:HelloArchitect --rpc-url $RPC --private-key $PK --broadcast
 forge create src/ArcToken.sol:ArcToken --rpc-url $RPC --private-key $PK --broadcast
@@ -60,11 +60,11 @@ forge create src/ArcMultiToken.sol:ArcMultiToken --rpc-url $RPC --private-key $P
 forge create src/ArcAirdrop.sol:ArcAirdrop --rpc-url $RPC --private-key $PK --broadcast
 ```
 
-每次部署后记录 `Deployed to:` 地址。
+Record the `Deployed to:` address after each deployment.
 
-## Step 5: 保存合约地址
+## Step 5: Save Contract Addresses
 
-将 5 个合约地址追加到 .env：
+Append the 5 contract addresses to .env:
 ```
 HELLO_ARCHITECT=0x...
 ARC_TOKEN=0x...
@@ -73,5 +73,5 @@ ARC_MULTI_TOKEN=0x...
 ARC_AIRDROP=0x...
 ```
 
-## 输出
-列出所有合约地址和部署交易哈希。
+## Output
+List all contract addresses and deployment transaction hashes.

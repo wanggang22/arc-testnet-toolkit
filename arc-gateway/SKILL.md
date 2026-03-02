@@ -1,21 +1,21 @@
 ---
 name: arc-gateway
-description: Circle Gateway 跨链转账全流程（Deposit → Sign → Mint）
+description: Circle Gateway cross-chain transfer full flow (Deposit → Sign → Mint)
 disable-model-invocation: true
 ---
 
-# Circle Gateway 跨链转账全流程
+# Circle Gateway Cross-Chain Transfer Full Flow
 
-通过 Circle Gateway 合约实现 ETH Sepolia → Arc Testnet 的 USDC 跨链转移。
-独立于 Bridge Kit，使用 Gateway 合约直接交互，增加更多链上记录。
+Transfer USDC from ETH Sepolia to Arc Testnet via Circle Gateway contract.
+Independent from Bridge Kit — interacts directly with Gateway contracts for additional on-chain records.
 
-**⚠️ Deposit 后需等 ~15 分钟 Sepolia finality，务必一次做对！**
+**Warning: After deposit, wait ~15 min for Sepolia finality. Get it right the first time!**
 
-## 前提
-- ETH Sepolia 上有 USDC（至少 6 个）+ ETH gas
-- 已安装 Foundry + Node.js
+## Prerequisites
+- USDC on ETH Sepolia (at least 6) + ETH gas
+- Foundry + Node.js installed
 
-## 关键地址（硬编码，不要改）
+## Key Addresses (hardcoded, do not change)
 ```
 Gateway Wallet:  0x0077777d7EBA4688BDeF3E311b846F25870A19B9
 Gateway Minter:  0x0022222ABE238Cc2C7Bb1f21003F0a260052475B
@@ -25,7 +25,7 @@ Domains:         ETH Sepolia=0, Arc Testnet=26
 Gateway API:     https://gateway-api-testnet.circle.com
 ```
 
-## 安装依赖
+## Install Dependencies
 
 ```bash
 mkdir -p ~/gateway-transfer && cd ~/gateway-transfer
@@ -33,40 +33,40 @@ npm init -y
 npm install viem dotenv
 ```
 
-在 package.json 添加 `"type": "module"`。复制 .env 到此目录（需要 CAST_PRIVATE_KEY、CAST_ADDRESS）。
+Add `"type": "module"` to package.json. Copy .env to this directory (needs CAST_PRIVATE_KEY, CAST_ADDRESS).
 
 ---
 
-## 执行流程（只需两步）
+## Execution Flow (just two steps)
 
-### Step 1: 运行 deposit（~2 分钟）
+### Step 1: Run deposit (~2 minutes)
 
-将 [gateway-deposit.mjs](scripts/gateway-deposit.mjs) 复制到项目目录后运行：
+Copy [gateway-deposit.mjs](scripts/gateway-deposit.mjs) to the project directory and run:
 
 ```bash
 node gateway-deposit.mjs
 ```
-- 自动检查 Sepolia USDC 余额、ETH gas
-- 余额不够直接 ABORT 并提示去哪领
-- 如果 Gateway 已有余额则跳过 deposit
+- Auto-checks Sepolia USDC balance and ETH gas
+- ABORTs with faucet links if balance is insufficient
+- Skips deposit if Gateway already has balance
 
-### Step 2: 运行 complete（自动等待 + 一气呵成）
+### Step 2: Run complete (auto-wait + all-in-one)
 
-将 [gateway-complete.mjs](scripts/gateway-complete.mjs) 复制到项目目录后运行：
+Copy [gateway-complete.mjs](scripts/gateway-complete.mjs) to the project directory and run:
 
 ```bash
 node gateway-complete.mjs
 ```
-- 自动每 60 秒轮询 Gateway 余额
-- 余额到账后自动：签名 → 提交 API → gatewayMint → 验证余额
-- 如果 mint 失败，自动保存 attestation 到 mint-data.json 供手动重试
+- Auto-polls Gateway balance every 60 seconds
+- Once balance arrives: sign → submit API → gatewayMint → verify balance
+- If mint fails, saves attestation to mint-data.json for manual retry
 
-**可以 deposit 完直接运行 complete，它会自动等待 15 分钟直到余额出现。**
+**You can run complete right after deposit — it will auto-wait ~15 minutes until balance appears.**
 
-## 关键注意事项（已知坑点）
-- ⚠️ **Gateway API 返回 `signature` 字段，不是 `operatorSig`**
-- **maxFee 至少 2 USDC**（实测最低约 2.00015 USDC），脚本设置 3 USDC 上限足够
-- **Deposit 后等约 15 分钟**才能在 balance 中看到（脚本自动轮询）
-- Arc 上 USDC 是原生代币（18 decimals），**不能从 Arc 存入 Gateway**，只能 Sepolia → Arc
-- 签名用 **BigInt**（`999999999n`），API 提交用 **string**（`"999999999"`），脚本分开构建两份 spec 避免混淆
-- Deposit 脚本用 **viem 直接发交易**（不是 cast），避免 Foundry PATH 问题影响预检
+## Known Gotchas
+- **Gateway API returns `signature` field, not `operatorSig`**
+- **maxFee must be at least 2 USDC** (actual minimum ~2.00015 USDC), script sets 3 USDC cap
+- **Wait ~15 minutes after deposit** before balance shows up (script auto-polls)
+- USDC on Arc is a native token (18 decimals), **cannot deposit to Gateway from Arc** — Sepolia → Arc only
+- Signing uses **BigInt** (`999999999n`), API submission uses **string** (`"999999999"`) — script builds two separate specs to avoid confusion
+- Deposit script uses **viem direct transactions** (not cast) to avoid Foundry PATH issues during pre-flight checks

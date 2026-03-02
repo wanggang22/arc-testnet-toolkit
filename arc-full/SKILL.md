@@ -1,97 +1,97 @@
 ---
 name: arc-full
-description: Arc Testnet 全流程一键执行（编排所有 arc-* skill）
+description: Arc Testnet full workflow one-click execution (orchestrates all arc-* skills)
 disable-model-invocation: true
 ---
 
-# Arc Testnet 全流程一键执行
+# Arc Testnet Full Workflow
 
-按顺序执行所有 Arc Testnet 教程操作，最大化链上交互记录。
-每个阶段对应一个独立 skill，也可单独调用。
+Execute all Arc Testnet tutorial operations in sequence to maximize on-chain activity records.
+Each phase corresponds to an independent skill that can also be invoked separately.
 
-## Windows 注意事项
-- 使用 Git Bash，Unix 语法
-- Foundry PATH：`export PATH="$HOME/.foundry/bin:$PATH"`
-- bash 下没有 grep/sed/tail/cut，所有逻辑写 .mjs 脚本
-- Node.js 脚本用 .mjs 扩展名 + package.json 中 `"type": "module"`
+## Windows Notes
+- Use Git Bash with Unix syntax
+- Foundry PATH: `export PATH="$HOME/.foundry/bin:$PATH"`
+- No grep/sed/tail/cut in bash — write all logic in .mjs scripts
+- Node.js scripts use .mjs extension + `"type": "module"` in package.json
 
-## 执行顺序
+## Execution Order
 
-### Phase 1: 环境搭建（对应 `/arc-setup`）
-1. 安装 Foundry（forge, cast）
-2. 创建 cast 钱包（保留私钥，空投用）
-3. **手动**：Circle Developer Console 注册 + 创建 API Key（Standard，不是 Client）
-4. 生成 Entity Secret → **手动**注册到 Console
-5. 代码创建 Circle 托管钱包（2 个 EOA on ARC+Sepolia + 1 个 SCA on ARC）
-6. **手动**：领测试币
-   - https://faucet.circle.com → Cast 钱包领 USDC + EURC（Arc Testnet）
-   - https://faucet.circle.com → Wallet1、Wallet2 领 USDC（Ethereum Sepolia + Arc Testnet）
-   - https://faucets.chain.link/sepolia → Cast + Wallet1 + Wallet2 领 ETH gas
-   - 每个地址多领几次确保余额充足（Sepolia USDC 至少 10+ 用于 Gateway）
+### Phase 1: Environment Setup (`/arc-setup`)
+1. Install Foundry (forge, cast)
+2. Create cast wallet (keep private key for airdrop claims)
+3. **Manual**: Register on Circle Developer Console + create API Key (Standard, not Client)
+4. Generate Entity Secret → **Manual**: register in Console
+5. Programmatically create Circle managed wallets (2 EOA on ARC+Sepolia + 1 SCA on ARC)
+6. **Manual**: Claim testnet tokens
+   - https://faucet.circle.com → Claim USDC + EURC for Cast wallet (Arc Testnet)
+   - https://faucet.circle.com → Claim USDC for Wallet1, Wallet2 (Ethereum Sepolia + Arc Testnet)
+   - https://faucets.chain.link/sepolia → Claim ETH gas for Cast + Wallet1 + Wallet2
+   - Claim multiple times per address to ensure sufficient balance (Sepolia USDC at least 10+ for Gateway)
 
-### Phase 2: 合约部署（对应 `/arc-deploy-foundry` + `/arc-deploy-templates`）
-7. Foundry 部署 5 个合约到 cast 钱包：
-   - HelloArchitect、ArcToken (ERC-20)、ArcNFT (ERC-721)、ArcMultiToken (ERC-1155)、ArcAirdrop
-   - 完整 Solidity 源码在 skill 内
-8. Circle 模板部署 4 个合约到 SCA 钱包：
-   - Airdrop、ERC-20、ERC-721、ERC-1155
-   - 使用 deployContractTemplate API
+### Phase 2: Contract Deployment (`/arc-deploy-foundry` + `/arc-deploy-templates`)
+7. Deploy 5 contracts to cast wallet via Foundry:
+   - HelloArchitect, ArcToken (ERC-20), ArcNFT (ERC-721), ArcMultiToken (ERC-1155), ArcAirdrop
+   - Full Solidity source code included in skill
+8. Deploy 4 template contracts to SCA wallet via Circle:
+   - Airdrop, ERC-20, ERC-721, ERC-1155
+   - Uses deployContractTemplate API
 
-### Phase 3: 合约交互（对应 `/arc-interactions`）
-9. Cast 钱包：~18 笔交互
+### Phase 3: Contract Interactions (`/arc-interactions`)
+9. Cast wallet: ~18 interactions
    - HelloArchitect: setGreeting x2
    - ERC-20: transfer x2, approve x2, mint x1
    - ERC-721: mint x3, transferFrom x1
    - ERC-1155: mint x3, safeTransferFrom x1
    - Airdrop: airdropERC20 x1
    - EURC: transfer x2
-10. SCA 钱包：~10 笔交互
+10. SCA wallet: ~10 interactions
     - ERC-20: mintTo, transfer x2, approve
     - Airdrop: airdropERC20
     - ERC-721: mintTo x2
     - ERC-1155: mintTo x3
 
-### Phase 4: 跨链（对应 `/arc-bridge` + `/arc-gateway`）
-11. Bridge Kit 桥接 USDC（Wallet1、Wallet2、Cast 各 1 次，共 3 USDC）
-    - ETH Sepolia 确认需 ~15 分钟
-12. Gateway 全流程（只需两个脚本）：
-    - `gateway-deposit.mjs`：预检 Sepolia USDC 余额 + ETH gas → Approve → Deposit
-    - `gateway-complete.mjs`：自动轮询余额 → EIP-712 签名 → 提交 API → gatewayMint → 验证
-    - Deposit 后直接运行 complete，它会自动等 ~15 分钟直到余额出现再一口气跑完
-    - Gateway fee ~2 USDC，存 6 USDC 转 3 USDC，到账约 1 USDC
+### Phase 4: Cross-Chain (`/arc-bridge` + `/arc-gateway`)
+11. Bridge Kit: bridge USDC (Wallet1, Wallet2, Cast — 1 each, 3 USDC total)
+    - ETH Sepolia confirmation takes ~15 minutes
+12. Gateway full flow (just two scripts):
+    - `gateway-deposit.mjs`: Pre-check Sepolia USDC balance + ETH gas → Approve → Deposit
+    - `gateway-complete.mjs`: Auto-poll balance → EIP-712 signing → Submit API → gatewayMint → Verify
+    - Run complete right after deposit — it auto-waits ~15 min until balance appears
+    - Gateway fee ~2 USDC, deposit 6 USDC, transfer 3 USDC, ~1 USDC arrives on Arc
 
-### Phase 5: 监控（对应 `/arc-monitor`）
-13. **手动**：webhook.site 获取 URL + Circle Console 注册 Webhook
-14. 创建 4 个事件监控器（Transfer、Approval、TransferSingle）
-15. 触发一笔交易 → 验证 webhook.site 收到通知
+### Phase 5: Monitoring (`/arc-monitor`)
+13. **Manual**: Get URL from webhook.site + register Webhook in Circle Console
+14. Create 4 event monitors (Transfer, Approval, TransferSingle)
+15. Trigger a transaction → verify webhook.site receives notification
 
-## 项目目录结构
+## Project Directory Structure
 ```
-~/arc-setup/           - 环境搭建脚本和 .env
-~/hello-arc/           - Foundry 项目（5 个合约）
-~/deploy-contracts/    - Circle 模板部署 + SCA 交互
-~/crosschain-transfer/ - Bridge Kit 桥接
-~/gateway-transfer/    - Gateway 全流程
+~/arc-setup/           - Setup scripts and .env
+~/hello-arc/           - Foundry project (5 contracts)
+~/deploy-contracts/    - Circle template deployment + SCA interactions
+~/crosschain-transfer/ - Bridge Kit bridging
+~/gateway-transfer/    - Gateway full flow
 ```
-每个目录都需要复制 .env 文件。
+Each directory needs a copy of the .env file.
 
-## 关键注意事项
-- **所有操作尽量集中到 cast 钱包**（有私钥可领空投/claim）
-- SCA 钱包没有私钥，不能直接领空投，只用于 Circle 模板部署
-- Arc 上 USDC 是原生代币（**18 decimals**），Sepolia 上是 **6 decimals**
-- Arc 上 USDC **不能**存入 Gateway（只能 Sepolia → Arc 单向）
-- Circle 模板合约 **name 必须字母数字**（无连字符）
-- Circle 模板 royalty 参数是 **royaltyPercent**（数字），不是 royaltyBps
-- Gateway API 返回 **`signature`** 字段（不是 `operatorSig`）
-- 手动步骤需要用户操作，执行时用 **AskUserQuestion 暂停等待**
-- 等待时间较长的步骤，可以先做其他操作
+## Key Notes
+- **Focus all operations on the cast wallet** (has private key for airdrop claims)
+- SCA wallet has no private key, cannot claim airdrops directly — only used for Circle template deployment
+- USDC on Arc is a native token (**18 decimals**), on Sepolia it's **6 decimals**
+- USDC on Arc **cannot** be deposited to Gateway (Sepolia → Arc one-way only)
+- Circle template contract **name must be alphanumeric** (no hyphens)
+- Circle template royalty parameter is **royaltyPercent** (number), not royaltyBps
+- Gateway API returns **`signature`** field (not `operatorSig`)
+- Manual steps require user action — **pause with AskUserQuestion** when executing
+- Steps with long wait times — you can do other tasks in the meantime
 
-## 总计交互笔数
-- Foundry 部署：5 笔
-- Circle 模板部署：4 笔
-- Cast 交互：~18 笔
-- SCA 交互：~10 笔
-- Bridge：3 笔
-- Gateway：~4 笔（approve + deposit + transfer + mint）
-- Monitor 触发：1 笔
-- **总计约 45+ 笔链上交互**
+## Total Transaction Count
+- Foundry deployments: 5
+- Circle template deployments: 4
+- Cast interactions: ~18
+- SCA interactions: ~10
+- Bridge: 3
+- Gateway: ~4 (approve + deposit + transfer + mint)
+- Monitor trigger: 1
+- **Total: ~45+ on-chain transactions**

@@ -1,43 +1,43 @@
 ---
 name: arc-deploy-templates
-description: Circle 模板合约部署到 Arc Testnet（4 个模板）
+description: Deploy 4 Circle template contracts to Arc Testnet
 disable-model-invocation: true
 ---
 
-# Circle 模板合约部署到 Arc Testnet
+# Deploy Circle Template Contracts to Arc Testnet
 
-用 Circle Smart Contract Platform SDK 部署 4 个模板合约到 SCA 钱包。
+Deploy 4 template contracts to the SCA wallet using Circle Smart Contract Platform SDK.
 
-## 前提
-- 已有 .env 包含 CIRCLE_API_KEY、CIRCLE_ENTITY_SECRET、SCA_WALLET_ID
-- 已安装 @circle-fin/smart-contract-platform
+## Prerequisites
+- .env contains CIRCLE_API_KEY, CIRCLE_ENTITY_SECRET, SCA_WALLET_ID
+- @circle-fin/smart-contract-platform is installed
 
-如果依赖未安装：
+If dependencies are not installed:
 ```bash
 npm install @circle-fin/smart-contract-platform
 ```
 
-## 完整部署脚本
+## Deployment Script
 
-将 [deploy-templates.mjs](scripts/deploy-templates.mjs) 复制到项目目录后运行：
+Copy [deploy-templates.mjs](scripts/deploy-templates.mjs) to the project directory and run:
 
 ```bash
 node deploy-templates.mjs
 ```
 
-如果 30 秒后状态还是 pending，再等一会儿重新查询：
+If status is still pending after 30 seconds, wait and re-query:
 ```javascript
-// 可以单独查询
+// Query individually
 const res = await scpClient.getContract({ id: "contractId" });
 console.log(res.data.contract);
 ```
 
-## 注意事项（已知坑点）
-- **name 必须字母数字**，不能有连字符（如 "ERC-20" 会报错，要用 "ERC20Token"）
-- **royaltyPercent** 是数字类型，不是 royaltyBps
-- 必须包含 **fee** 和 **name** 字段，否则报错
-- 响应在 `res.data.contractIds` 和 `res.data.transactionId`
-- 查状态：`scpClient.getContract({ id })` → `res.data.contract`
+## Known Gotchas
+- **name must be alphanumeric** — no hyphens (e.g., "ERC-20" errors, use "ERC20Token")
+- **royaltyPercent** is a number type, not royaltyBps
+- Must include **fee** and **name** fields, otherwise errors
+- Response is in `res.data.contractIds` and `res.data.transactionId`
+- Check status: `scpClient.getContract({ id })` → `res.data.contract`
 
-## 输出
-列出所有合约地址和部署状态，确认 .env 已更新。
+## Output
+List all contract addresses and deployment status, confirm .env is updated.

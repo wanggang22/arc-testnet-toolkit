@@ -13,7 +13,7 @@ const GATEWAY_WALLET = "0x0077777d7EBA4688BDeF3E311b846F25870A19B9";
 const GATEWAY_MINTER = "0x0022222ABE238Cc2C7Bb1f21003F0a260052475B";
 const SOURCE_USDC = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
 const DEST_USDC = "0x3600000000000000000000000000000000000000";
-const TRANSFER_AMOUNT = "3000000"; // 3 USDC (6 decimals)，扣除 ~2 USDC fee 后到账约 1 USDC
+const TRANSFER_AMOUNT = "3000000"; // 3 USDC (6 decimals), after ~2 USDC fee, ~1 USDC arrives on Arc
 
 function padAddress(addr) {
   return "0x" + addr.replace("0x", "").toLowerCase().padStart(64, "0");
@@ -56,7 +56,7 @@ const account = privateKeyToAccount(PRIVATE_KEY);
 const walletClient = createWalletClient({ account, chain: sepolia, transport: http() });
 const salt = "0x" + crypto.randomBytes(32).toString("hex");
 
-// Build spec — 注意：签名用 BigInt，API 用 string，分开构建避免混淆
+// Build spec — signing uses BigInt, API uses string, built separately to avoid confusion
 const specForSign = {
   version: 1,
   sourceDomain: 0,
@@ -111,7 +111,7 @@ console.log("Signature:", signature.substring(0, 30) + "...");
 // ============================================================
 console.log("\n=== Phase 3: Submitting to Gateway API ===");
 
-// API 版本：所有数值用 string，不能有 BigInt
+// API version: all numeric values as strings, no BigInt
 const specForApi = {
   version: 1,
   sourceDomain: 0,
@@ -147,7 +147,7 @@ if (statusCode !== 200 && statusCode !== 201) {
   process.exit(1);
 }
 
-// ⚠️ 关键：API 返回字段叫 "signature"，不是 "operatorSig"
+// IMPORTANT: API returns field named "signature", not "operatorSig"
 const attestation = transferData.attestation;
 const operatorSig = transferData.signature;
 
