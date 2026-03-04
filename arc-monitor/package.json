@@ -1,8 +1,0 @@
-{
-  "name": "arc-monitor",
-  "type": "module",
-  "dependencies": {
-    "@circle-fin/smart-contract-platform": "^10.1.0",
-    "dotenv": "^17.3.1"
-  }
-}
