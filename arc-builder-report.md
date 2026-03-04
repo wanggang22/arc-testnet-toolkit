@@ -31,21 +31,21 @@ I completed the full Arc Testnet developer tutorial in one session, covering the
 ### Contract Deployments (9 tx)
 
 **Foundry (Cast Wallet):**
-| Contract | Type | Address |
-|----------|------|---------|
-| HelloArchitect | Custom | `0x6d4BD5D0D8f527E3298D3db6D5fA9DD754aaAA3E` |
-| ArcToken | ERC-20 | `0xCC05Fc43cb8e985e03cBD83861BadfEF12F49d84` |
-| ArcNFT | ERC-721 | `0x0D59A3442B1eCC7550A6ba181DEb23BE9A256aF3` |
-| ArcMultiToken | ERC-1155 | `0x94850C213021f82305B5a829243b58D95Bb4b38e` |
-| ArcAirdrop | Airdrop | `0x75bBa24191922D721d3b16d0F0FFF7F97b444174` |
+| Contract | Type |
+|----------|------|
+| HelloArchitect | Custom |
+| ArcToken | ERC-20 |
+| ArcNFT | ERC-721 |
+| ArcMultiToken | ERC-1155 |
+| ArcAirdrop | Airdrop |
 
 **Circle Templates (SCA Wallet):**
-| Contract | Type | Address |
-|----------|------|---------|
-| AirdropContract | Airdrop | `0x133343737d3f947247dcb3079cb03601ed5504e7` |
-| ERC20Token | ERC-20 | `0xf7bca5f7eaa39b824693b852d75e7349b8bbc75c` |
-| ERC721NFT | ERC-721 | `0xef99642f73f254dea0d6c6909910c3b8e6828309` |
-| ERC1155Multi | ERC-1155 | `0xdd7893c0064009ffa2ab3d53d218152983288b18` |
+| Contract | Type |
+|----------|------|
+| AirdropContract | Airdrop |
+| ERC20Token | ERC-20 |
+| ERC721NFT | ERC-721 |
+| ERC1155Multi | ERC-1155 |
 
 ### Contract Interactions (28 tx)
 
@@ -75,12 +75,10 @@ I completed the full Arc Testnet developer tutorial in one session, covering the
 
 *Round 1:*
 - Approve → Deposit 6 USDC → EIP-712 Sign → API Submit → gatewayMint
-- Transfer ID: `1f4b67c1-bb0c-4c7c-8256-b2ad21af1aa8`
 - Fee: 2.00015 USDC | Received: ~1 USDC on Arc
 
 *Round 2:*
 - Approve → Deposit 6 USDC → EIP-712 Sign → API Submit → gatewayMint
-- Transfer ID: `15823214-6e1c-4ce0-a0a2-b023480c866a`
 - Fee: 2.00015 USDC | Received: ~1 USDC on Arc
 
 ### Event Monitoring (7 tx triggered)
@@ -149,16 +147,7 @@ All webhook notifications confirmed received.
 
 ---
 
-## Wallet Addresses (Verifiable On-Chain)
-
-| Wallet | Address |
-|--------|---------|
-| Cast (EOA) | `***REMOVED***` |
-| Wallet1 (Circle EOA) | `0xc55d62b537b771f923f5ead6cc111e77e4d99531` |
-| Wallet2 (Circle EOA) | `0xf4e280f54e77dc6dde9ff2d0a209857b75e33fb9` |
-| SCA (Circle) | `0x8d1990553d0d46eb7ca528b52a6c98a2585518fc` |
-
-All transactions are verifiable on the Arc Testnet explorer.
+All transactions are verifiable on the Arc Testnet explorer using your own wallet addresses.
 
 ---
 

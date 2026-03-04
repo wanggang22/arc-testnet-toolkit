@@ -8,21 +8,21 @@
 - forge 1.5.1-stable, cast 1.5.1-stable
 
 ### Cast 钱包
-- 地址: `***REMOVED***`
-- 私钥: `0x4f3a...ec59`
+- 地址: `<YOUR_CAST_ADDRESS>`
+- 私钥: 保存在 `.env` 中
 
 ### Circle 配置
-- API Key: `TEST_API_KEY:2c49...4319`
-- Entity Secret: `0373...81dc`（已加密注册到 Console）
+- API Key: 保存在 `.env` 中
+- Entity Secret: 已加密注册到 Console，保存在 `.env` 中
 
 ### Circle 托管钱包
 | 名称 | 地址 | 类型 |
 |------|------|------|
-| Wallet1 | `0xc55d62b537b771f923f5ead6cc111e77e4d99531` | EOA (Arc + Sepolia) |
-| Wallet2 | `0xf4e280f54e77dc6dde9ff2d0a209857b75e33fb9` | EOA (Arc + Sepolia) |
-| SCA | `0x8d1990553d0d46eb7ca528b52a6c98a2585518fc` | SCA (Arc) |
+| Wallet1 | `<YOUR_WALLET1_ADDRESS>` | EOA (Arc + Sepolia) |
+| Wallet2 | `<YOUR_WALLET2_ADDRESS>` | EOA (Arc + Sepolia) |
+| SCA | `<YOUR_SCA_ADDRESS>` | SCA (Arc) |
 
-Wallet Set ID: `c7b39eed-59bc-5767-9a9e-a9aadad74595`
+Wallet Set ID: `<YOUR_WALLET_SET_ID>`
 
 ---
 
@@ -31,19 +31,19 @@ Wallet Set ID: `c7b39eed-59bc-5767-9a9e-a9aadad74595`
 ### Foundry 部署 (Cast 钱包, 5 笔)
 | 合约 | 地址 |
 |------|------|
-| HelloArchitect | `0x6d4BD5D0D8f527E3298D3db6D5fA9DD754aaAA3E` |
-| ArcToken (ERC-20) | `0xCC05Fc43cb8e985e03cBD83861BadfEF12F49d84` |
-| ArcNFT (ERC-721) | `0x0D59A3442B1eCC7550A6ba181DEb23BE9A256aF3` |
-| ArcMultiToken (ERC-1155) | `0x94850C213021f82305B5a829243b58D95Bb4b38e` |
-| ArcAirdrop | `0x75bBa24191922D721d3b16d0F0FFF7F97b444174` |
+| HelloArchitect | `<YOUR_HELLO_ARCHITECT>` |
+| ArcToken (ERC-20) | `<YOUR_ARC_TOKEN>` |
+| ArcNFT (ERC-721) | `<YOUR_ARC_NFT>` |
+| ArcMultiToken (ERC-1155) | `<YOUR_ARC_MULTI_TOKEN>` |
+| ArcAirdrop | `<YOUR_ARC_AIRDROP>` |
 
 ### Circle 模板部署 (SCA 钱包, 4 笔)
 | 合约 | 地址 |
 |------|------|
-| AirdropContract | `0x133343737d3f947247dcb3079cb03601ed5504e7` |
-| ERC20Token | `0xf7bca5f7eaa39b824693b852d75e7349b8bbc75c` |
-| ERC721NFT | `0xef99642f73f254dea0d6c6909910c3b8e6828309` |
-| ERC1155Multi | `0xdd7893c0064009ffa2ab3d53d218152983288b18` |
+| AirdropContract | `<YOUR_SCA_AIRDROP>` |
+| ERC20Token | `<YOUR_SCA_ERC20>` |
+| ERC721NFT | `<YOUR_SCA_ERC721>` |
+| ERC1155Multi | `<YOUR_SCA_ERC1155>` |
 
 ---
 
@@ -99,19 +99,18 @@ Wallet Set ID: `c7b39eed-59bc-5767-9a9e-a9aadad74595`
 ### Gateway (完成)
 | 步骤 | 状态 | 详情 |
 |------|------|------|
-| Approve USDC | 完成 | tx: `0x83ea...e6cf` |
-| Deposit 6 USDC | 完成 | tx: `0xffc7...4942` |
+| Approve USDC | 完成 | — |
+| Deposit 6 USDC | 完成 | — |
 | 等待 Sepolia 确认 | 完成 | 轮询 18 次 (~18 分钟) |
-| EIP-712 签名 + API 提交 | 完成 | Transfer ID: `1f4b67c1-bb0c-4c7c-8256-b2ad21af1aa8`, Fee: 2.00015 USDC |
-| gatewayMint on Arc | 完成 | tx: `0x7f777235b82299155fd77397388d48968e2c5d641a32a6c2e9c764597c6a6c06` |
+| EIP-712 签名 + API 提交 | 完成 | Fee: 2.00015 USDC |
+| gatewayMint on Arc | 完成 | — |
 
 ---
 
 ## Phase 5: 事件监控
 
 ### Webhook
-- URL: `https://webhook.site/05ad9bac-3722-4abc-91cb-dea8ae690c89`
-- 已在 Circle Console 注册
+- URL: 在 Circle Console 注册你自己的 webhook.site URL
 
 ### 事件监控器 (4 个)
 | 合约 | 事件签名 | 状态 |
@@ -123,7 +122,6 @@ Wallet Set ID: `c7b39eed-59bc-5767-9a9e-a9aadad74595`
 
 ### 触发验证 (1 笔)
 - ERC-20 Transfer 1 ARC to Wallet1
-- tx: `0x3931f6becb27344aa23f3b86431fcefa515cb41e07110f3bd6535c2161ba8b47`
 - Webhook 通知已确认收到
 
 ---
@@ -134,7 +132,7 @@ Wallet Set ID: `c7b39eed-59bc-5767-9a9e-a9aadad74595`
 ~/hello-arc/           - Foundry 项目 (5 个 Solidity 合约)
 ~/deploy-contracts/    - Circle 模板部署 + SCA 交互脚本
 ~/crosschain-transfer/ - Bridge Kit 跨链桥接
-~/gateway-transfer/    - Gateway 全流程 (进行中)
+~/gateway-transfer/    - Gateway 全流程
 ~/arc-monitor/         - 事件监控
 ```
 
