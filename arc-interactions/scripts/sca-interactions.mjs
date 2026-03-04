@@ -59,7 +59,7 @@ await exec("ERC-20: Approve Airdrop contract", {
 });
 
 // === Airdrop ===
-// Circle template Airdrop signature: airdropERC20(address,(address,uint256)[])
+// Circle 模板 Airdrop 的签名是 airdropERC20(address,(address,uint256)[])
 await exec("Airdrop: Send ERC20 to Wallet1 + Wallet2", {
   contractAddress: AIRDROP,
   abiFunctionSignature: "airdropERC20(address,(address,uint256)[])",
@@ -67,7 +67,7 @@ await exec("Airdrop: Send ERC20 to Wallet1 + Wallet2", {
 });
 
 // === ERC-721 ===
-// Circle template ERC-721 mint signature: mintTo(address,string), second param is metadata URI
+// Circle 模板 ERC-721 的 mint 签名是 mintTo(address,string)，第二个参数是 metadata URI
 await exec("ERC-721: Mint to self", {
   contractAddress: ERC721,
   abiFunctionSignature: "mintTo(address,string)",
@@ -81,8 +81,8 @@ await exec("ERC-721: Mint to Wallet1", {
 });
 
 // === ERC-1155 ===
-// Circle template ERC-1155: mintTo(address,uint256,string,uint256)
-// Use max uint256 as second param when minting a new token type for the first time
+// Circle 模板 ERC-1155：mintTo(address,uint256,string,uint256)
+// 首次 mint 新 token type 时第二个参数用 max uint256
 const MAX_UINT = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
 await exec("ERC-1155: Mint new token type (auto id)", {
   contractAddress: ERC1155,
