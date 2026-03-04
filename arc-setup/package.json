@@ -1,0 +1,9 @@
+{
+  "name": "arc-setup",
+  "type": "module",
+  "dependencies": {
+    "@circle-fin/developer-controlled-wallets": "^10.1.0",
+    "@circle-fin/smart-contract-platform": "^10.1.0",
+    "dotenv": "^17.3.1"
+  }
+}
