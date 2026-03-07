@@ -8,23 +8,25 @@ A complete, reproducible toolkit for interacting with [Arc Network](https://arc.
 |--------|-------------|---------|
 | **arc-setup** | Environment setup: Foundry, Circle wallets, faucets | `generate-entity-secret.mjs`, `create-wallets.mjs` |
 | **arc-deploy-foundry** | Deploy 5 smart contracts via Foundry (ERC-20, ERC-721, ERC-1155, Airdrop, HelloArchitect) | 5 Solidity contracts |
-| **arc-deploy-templates** | Deploy 4 Circle template contracts via SCP SDK | `deploy-templates.mjs` |
+| **arc-deploy-templates** | Deploy 4 Circle template contracts via API | `deploy-templates.mjs` |
 | **arc-interactions** | ~28 on-chain interactions (cast + SCA wallets) | `sca-interactions.mjs` |
 | **arc-bridge** | USDC bridge from ETH Sepolia to Arc via Bridge Kit | `bridge.mjs` |
 | **arc-gateway** | Full Circle Gateway flow: deposit, EIP-712 sign, API submit, gatewayMint | `gateway-deposit.mjs`, `gateway-complete.mjs` |
-| **arc-monitor** | Contract event monitors + webhook notifications | `create-monitors.mjs`, `query-logs.mjs` |
+| **arc-xylonet** | XyloNet DeFi interactions: Tip, Swap, Vault, Bridge, LP | `xylonet-auto.mjs` |
+| **arc-monitor** | Contract event monitors + webhook notifications | `import-and-monitor.mjs`, `query-logs.mjs` |
 | **arc-full** | Orchestration guide for running all modules in sequence | (instructions only) |
 
 ## Total On-chain Activity
 
 - 5 Foundry contract deployments
-- 4 Circle template deployments
+- 4 Circle template deployments (Airdrop + ERC-20 + ERC-721 + ERC-1155)
 - ~18 cast wallet transactions (transfers, mints, approvals, airdrops)
 - ~10 SCA wallet transactions
-- 3 cross-chain bridges (Bridge Kit)
-- ~4 Gateway transactions (approve + deposit + transfer + mint)
-- 1 monitor trigger
-- **45+ total transactions**
+- ~6 cross-chain bridges (Bridge Kit: W1+W2 approve+burn+mint)
+- ~4 Gateway transactions (approve + deposit + API transfer + gatewayMint)
+- ~16 XyloNet DeFi transactions (Tip/Swap/Deposit/Bridge/LP)
+- ~8 monitor setup + trigger transactions
+- **~71 total transactions**
 
 ## Prerequisites
 
@@ -42,11 +44,18 @@ Each module contains a `SKILL.md` with step-by-step instructions and standalone 
 
 ## Gotchas Documented
 
+- Circle SCP SDK `deployContractTemplate` has bugs — use direct fetch API instead
+- Circle SCP SDK `createEventMonitor` doesn't work — use `/v1/w3s/contracts/monitors` endpoint
+- Foundry contracts must be imported via `/v1/w3s/contracts/import` before creating monitors
+- Monitor/import API calls require `idempotencyKey`
 - Gateway API returns `signature` field (not `operatorSig`)
 - EIP-712 signing requires BigInt, but API submission requires string values
 - Circle template `name` must be alphanumeric (no hyphens)
 - Arc USDC is a native token (18 decimals) vs Sepolia USDC (6 decimals)
+- EURC on Arc: `0x89B50855Aa3bE2F677cD6303Cec089B5F319D72a` (6 decimals)
 - Gateway deposits take ~15 min for Sepolia finality
+- Bridge Kit: Cast wallet with viem adapter fails on Arc RPC, only Circle wallets work
+- BigInt serialization fix needed: `BigInt.prototype.toJSON = function() { return this.toString(); };`
 
 ## License
 

@@ -23,7 +23,12 @@ function encryptEntitySecret() {
 }
 
 const templates = [
-  // Airdrop already deployed: 0x133343737d3f947247dcb3079cb03601ed5504e7
+  {
+    envKey: "SCA_AIRDROP",
+    name: "AirdropContract",
+    templateId: "13e322f2-18dc-4f57-8eed-4bddfc50f85e",
+    params: { defaultAdmin: SCA_ADDRESS },
+  },
   {
     envKey: "SCA_ERC20",
     name: "ERC20Token",
@@ -107,6 +112,16 @@ for (const d of deployed) {
 }
 
 if (envAppend.trim()) {
-  fs.appendFileSync(".env", envAppend);
-  console.log("\nContract addresses appended to .env");
+  let envContent = fs.readFileSync(".env", "utf8");
+  for (const line of envAppend.trim().split("\n")) {
+    const [key, val] = line.split("=");
+    const regex = new RegExp(`^${key}=.*$`, "m");
+    if (regex.test(envContent)) {
+      envContent = envContent.replace(regex, `${key}=${val}`);
+    } else {
+      envContent += `\n${key}=${val}`;
+    }
+  }
+  fs.writeFileSync(".env", envContent);
+  console.log("\nContract addresses updated in .env");
 }

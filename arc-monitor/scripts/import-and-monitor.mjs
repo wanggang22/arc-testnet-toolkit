@@ -38,6 +38,7 @@ for (const c of contractsToImport) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        idempotencyKey: crypto.randomUUID(),
         name: c.name.replace(/[^a-zA-Z0-9]/g, ""),
         blockchain: "ARC-TESTNET",
         address: c.address,
@@ -84,13 +85,14 @@ const monitors = [
 for (const m of monitors) {
   if (!m.contractAddress) { console.log(`${m.name}: SKIPPED`); continue; }
   try {
-    const res = await fetch("https://api.circle.com/v1/w3s/eventMonitors", {
+    const res = await fetch("https://api.circle.com/v1/w3s/contracts/monitors", {
       method: "POST",
       headers: {
         Authorization: "Bearer " + apiKey,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        idempotencyKey: crypto.randomUUID(),
         blockchain: "ARC-TESTNET",
         contractAddress: m.contractAddress,
         eventSignature: m.eventSignature,
@@ -136,13 +138,14 @@ const scaMonitors = [
 for (const m of scaMonitors) {
   if (!m.contractAddress) { console.log(`${m.name}: SKIPPED`); continue; }
   try {
-    const res = await fetch("https://api.circle.com/v1/w3s/eventMonitors", {
+    const res = await fetch("https://api.circle.com/v1/w3s/contracts/monitors", {
       method: "POST",
       headers: {
         Authorization: "Bearer " + apiKey,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        idempotencyKey: crypto.randomUUID(),
         blockchain: "ARC-TESTNET",
         contractAddress: m.contractAddress,
         eventSignature: m.eventSignature,
@@ -168,7 +171,7 @@ for (const m of scaMonitors) {
 // List all monitors
 console.log("\n=== All Event Monitors ===\n");
 try {
-  const res = await fetch("https://api.circle.com/v1/w3s/eventMonitors?blockchain=ARC-TESTNET", {
+  const res = await fetch("https://api.circle.com/v1/w3s/contracts/monitors?blockchain=ARC-TESTNET", {
     headers: { Authorization: "Bearer " + apiKey },
   });
   const data = await res.json();
