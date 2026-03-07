@@ -1,10 +1,23 @@
 import { execSync } from 'child_process';
+import { config } from 'dotenv';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+// 加载 .env（从脚本所在目录或上级目录查找）
+const __dirname = dirname(fileURLToPath(import.meta.url));
+config({ path: resolve(__dirname, '../.env') });
+config({ path: resolve(__dirname, '../../.env') });
 
 // ============ 配置 ============
-const CAST = 'C:\\Users\\Wang16\\.foundry\\bin\\cast.exe';
+const CAST = process.env.CAST_PATH || 'cast';
 const RPC = 'https://rpc.testnet.arc.network';
-const PRIVATE_KEY = '***REMOVED***';
-const WALLET = '***REMOVED***';
+const PRIVATE_KEY = process.env.CAST_PRIVATE_KEY;
+const WALLET = process.env.CAST_ADDRESS;
+
+if (!PRIVATE_KEY || !WALLET) {
+  console.error('错误: 请在 .env 中设置 CAST_PRIVATE_KEY 和 CAST_ADDRESS');
+  process.exit(1);
+}
 
 // 合约地址
 const USDC = '0x3600000000000000000000000000000000000000';
