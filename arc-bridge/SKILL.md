@@ -48,8 +48,9 @@ The bridge kit's internal viem client has DNS/RPC compatibility issues on Window
 by patching RPC endpoints or monkey-patching cached clients.
 
 **Workaround**: Do NOT use castAdapter directly. Instead:
-1. Bridge from a Circle managed wallet (W1) to itself on Arc (circleAdapter works fine)
-2. Then transfer USDC from W1 to Cast wallet on Arc via Circle SDK
+1. Cast transfers USDC to W1 on Sepolia (Cast has private key, uses viem)
+2. W1 bridges to itself on Arc (circleAdapter works fine)
+3. W1 transfers USDC to Cast on Arc via Circle SDK
 
 See [bridge-cast-workaround.mjs](scripts/bridge-cast-workaround.mjs) for the working script.
 
