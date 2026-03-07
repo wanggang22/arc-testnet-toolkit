@@ -43,14 +43,21 @@ node bridge.mjs
   ```
 
 ## Windows Known Issue: Cast Wallet Bridge
-`createViemAdapterFromPrivateKey` fails on Windows with RPC error 156001 ("Failed to get native balance").
-The bridge kit's internal viem client has DNS/RPC compatibility issues on Windows that cannot be fixed
-by patching RPC endpoints or monkey-patching cached clients.
+Bridge kit 无法直接桥接 Cast 钱包（非 Circle 托管），有两个限制：
 
-**Workaround**: Do NOT use castAdapter directly. Instead:
-1. Cast transfers USDC to W1 on Sepolia (Cast has private key, uses viem)
-2. W1 bridges to itself on Arc (circleAdapter works fine)
-3. W1 transfers USDC to Cast on Arc via Circle SDK
+1. **from 端失败**：`createViemAdapterFromPrivateKey` 在 Windows 上报 RPC error 156001
+   ("Failed to get native balance")，viem 内部 DNS/RPC 兼容性问题，
+   patch RPC 或 monkey-patch cached clients 均无效。
+2. **to 端失败**：即使用 Circle adapter 做 from（如 W1），将 Cast 地址作为 destination，
+   bridge kit 仍会通过 adapter 检查目标地址余额。Cast 不是 Circle 托管钱包，
+   Circle adapter 无法查询其余额，同样报 156001 错误。
+
+因此 Cast 钱包既不能做 source 也不能做 destination，必须用 W1 做中转。
+
+**Workaround（3 步）**：
+1. Cast 在 Sepolia 转 USDC 给 W1（Cast 有私钥，用 viem 直接转账无问题）
+2. W1 桥接到自己的 Arc 地址（bridge kit from/to 都是 Circle 钱包，正常工作）
+3. W1 在 Arc 上把 USDC 转给 Cast（Circle SDK createTransaction）
 
 See [bridge-cast-workaround.mjs](scripts/bridge-cast-workaround.mjs) for the working script.
 
