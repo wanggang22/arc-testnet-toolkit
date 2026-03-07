@@ -54,6 +54,7 @@ Each phase corresponds to an independent skill that can also be invoked separate
 ### Phase 4: Cross-Chain (`/arc-bridge` + `/arc-gateway`)
 11. Bridge Kit: bridge USDC (Wallet1, Wallet2, Cast — 1 each, 3 USDC total)
     - ETH Sepolia confirmation takes ~15 minutes
+    - **Windows issue**: `createViemAdapterFromPrivateKey` fails (RPC error 156001). For Cast wallet, use Circle adapter workaround: bridge W1→W1 on Arc, then transfer W1→Cast on Arc. See `bridge-cast-workaround.mjs`.
 12. Gateway full flow (just two scripts):
     - `gateway-deposit.mjs`: Pre-check Sepolia USDC balance + ETH gas → Approve → Deposit
     - `gateway-complete.mjs`: Auto-poll balance → EIP-712 signing → Submit API → gatewayMint → Verify

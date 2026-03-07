@@ -3,7 +3,6 @@ BigInt.prototype.toJSON = function() { return this.toString(); };
 
 import { BridgeKit } from "@circle-fin/bridge-kit";
 import { createCircleWalletsAdapter } from "@circle-fin/adapter-circle-wallets";
-import { createViemAdapterFromPrivateKey } from "@circle-fin/adapter-viem-v2";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -42,19 +41,20 @@ try {
   console.error("Wallet2 bridge failed:", err?.response?.data || err.message);
 }
 
-// === Bridge 3: Cast 钱包 (有私钥) ===
-console.log("\n=== Bridge: Cast Wallet → Arc (1 USDC) ===");
-const castAdapter = createViemAdapterFromPrivateKey({
-  privateKey: process.env.CAST_PRIVATE_KEY,
-});
+// === Bridge 3: Cast 钱包 ===
+// NOTE: createViemAdapterFromPrivateKey fails on Windows (RPC error 156001).
+// Workaround: bridge W1 -> W1 on Arc, then transfer W1 -> Cast on Arc.
+// See bridge-cast-workaround.mjs for the full working script.
+console.log("\n=== Bridge: W1(Sepolia) → W1(Arc) for Cast (1 USDC) ===");
 try {
   const r3 = await kit.bridge({
-    from: { adapter: castAdapter, chain: "Ethereum_Sepolia" },
-    to: { adapter: circleAdapter, chain: "Arc_Testnet", address: process.env.CAST_ADDRESS },
+    from: { adapter: circleAdapter, chain: "Ethereum_Sepolia", address: process.env.WALLET1_ADDRESS },
+    to: { adapter: circleAdapter, chain: "Arc_Testnet", address: process.env.WALLET1_ADDRESS },
     token: "USDC",
     amount: "1",
   });
   console.log("Result:", JSON.stringify(r3, null, 2));
+  console.log("\nNOTE: Run bridge-cast-workaround.mjs to transfer from W1 to Cast on Arc.");
 } catch (err) {
   console.error("Cast bridge failed:", err?.response?.data || err.message);
 }

@@ -33,7 +33,6 @@ node bridge.mjs
 ```
 
 ## Notes
-- Cast wallet is not in the Circle system — use castAdapter for **from**, circleAdapter with `address` for **to**
 - ETH Sepolia confirmation takes ~**15 minutes**, you can do other tasks in the meantime
 - USDC on Arc is a native token (**18 decimals**), on Sepolia it's **6 decimals**
 - Verify balance after bridging:
@@ -42,6 +41,17 @@ node bridge.mjs
   cast balance $CAST_ADDRESS --rpc-url https://rpc.testnet.arc.network
   # Returns wei value, divide by 1e18 for USDC amount
   ```
+
+## Windows Known Issue: Cast Wallet Bridge
+`createViemAdapterFromPrivateKey` fails on Windows with RPC error 156001 ("Failed to get native balance").
+The bridge kit's internal viem client has DNS/RPC compatibility issues on Windows that cannot be fixed
+by patching RPC endpoints or monkey-patching cached clients.
+
+**Workaround**: Do NOT use castAdapter directly. Instead:
+1. Bridge from a Circle managed wallet (W1) to itself on Arc (circleAdapter works fine)
+2. Then transfer USDC from W1 to Cast wallet on Arc via Circle SDK
+
+See [bridge-cast-workaround.mjs](scripts/bridge-cast-workaround.mjs) for the working script.
 
 ## Output
 Confirm Arc Testnet USDC balance increased for all 3 wallets.
