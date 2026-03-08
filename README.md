@@ -13,6 +13,7 @@ A complete, reproducible toolkit for interacting with [Arc Network](https://arc.
 | **arc-bridge** | USDC bridge from ETH Sepolia to Arc via Bridge Kit | `bridge.mjs` |
 | **arc-gateway** | Full Circle Gateway flow: deposit, EIP-712 sign, API submit, gatewayMint | `gateway-deposit.mjs`, `gateway-complete.mjs` |
 | **arc-xylonet** | XyloNet DeFi interactions: Tip, Swap, Vault, Bridge, LP | `xylonet-auto.mjs` |
+| **arc-nanopay** | Nanopayments: x402 seller server + buyer deposit/pay/withdraw | `nanopay-seller.mjs`, `nanopay-buyer.mjs` |
 | **arc-monitor** | Contract event monitors + webhook notifications | `import-and-monitor.mjs`, `query-logs.mjs` |
 | **arc-full** | Orchestration guide for running all modules in sequence | (instructions only) |
 
@@ -25,8 +26,9 @@ A complete, reproducible toolkit for interacting with [Arc Network](https://arc.
 - ~6 cross-chain bridges (Bridge Kit: W1+W2 approve+burn+mint)
 - ~4 Gateway transactions (approve + deposit + API transfer + gatewayMint)
 - ~16 XyloNet DeFi transactions (Tip/Swap/Deposit/Bridge/LP)
+- ~6 Nanopayments (deposit + 3 x402 payments + withdraw)
 - ~8 monitor setup + trigger transactions
-- **~71 total transactions**
+- **~77 total transactions**
 
 ## Prerequisites
 
@@ -49,6 +51,8 @@ Each module contains a `SKILL.md` with step-by-step instructions and standalone 
 - Foundry contracts must be imported via `/v1/w3s/contracts/import` before creating monitors
 - Monitor/import API calls require `idempotencyKey`
 - Gateway API returns `signature` field (not `operatorSig`)
+- Nanopayments EIP-3009 `validBefore` must be at least 3 days in the future
+- Nanopayments package: `@circle-fin/x402-batching` (note the hyphen in `circle-fin`)
 - EIP-712 signing requires BigInt, but API submission requires string values
 - Circle template `name` must be alphanumeric (no hyphens)
 - Arc USDC is a native token (18 decimals) vs Sepolia USDC (6 decimals)
