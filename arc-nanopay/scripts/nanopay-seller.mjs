@@ -6,9 +6,10 @@ import "dotenv/config";
 import express from "express";
 import { createGatewayMiddleware } from "@circle-fin/x402-batching/server";
 
-const SELLER_ADDRESS = process.env.CAST_ADDRESS;
+// Seller must be a DIFFERENT address from the buyer (Gateway rejects self_transfer)
+const SELLER_ADDRESS = process.env.WALLET1_ADDRESS || process.env.CAST_ADDRESS;
 if (!SELLER_ADDRESS) {
-  console.error("ERROR: CAST_ADDRESS not found in .env");
+  console.error("ERROR: WALLET1_ADDRESS or CAST_ADDRESS not found in .env");
   process.exit(1);
 }
 

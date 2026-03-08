@@ -5,6 +5,8 @@
 import "dotenv/config";
 import { GatewayClient } from "@circle-fin/x402-batching/client";
 
+BigInt.prototype.toJSON = function() { return this.toString(); };
+
 const PRIVATE_KEY = process.env.CAST_PRIVATE_KEY;
 const CAST_ADDRESS = process.env.CAST_ADDRESS;
 

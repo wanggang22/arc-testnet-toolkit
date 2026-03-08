@@ -81,9 +81,11 @@ kill %1  # 或 pkill -f nanopay-seller
 - Withdraw: ~1 笔
 - **总计约 6 笔交互记录**
 
-## 关键注意事项
+## 关键注意事项（已实战验证）
+- ⚠️ **Buyer 和 Seller 必须是不同地址**！Gateway 会拒绝 `self_transfer`，Seller 默认用 WALLET1_ADDRESS
 - ⚠️ **validBefore 必须至少 3 天后**，否则 Gateway 拒绝
-- ⚠️ **Deposit 用的是 Arc Testnet USDC**（native token, 18 decimals）
+- ⚠️ **BigInt 序列化**：需要 `BigInt.prototype.toJSON` 修复，否则 JSON.stringify 报错
+- ⚠️ **Deposit 用的是 Arc Testnet USDC**（6 decimals，SDK 内部处理）
+- ⚠️ **Windows pkill 可能不杀进程**，用 `taskkill //F //PID <pid>` 或 `netstat -ano | grep 4402` 查 PID
 - x402 付款是 offchain 签名，**零 gas**，但 Gateway 会批量结算到链上
-- Seller 和 Buyer 可以是同一个地址（测试用途）
-- 包名是 `@circle-fin/x402-batching`（注意连字符）
+- 包名是 `@circle-fin/x402-batching`（注意连字符，不是 `@circlefin`）
