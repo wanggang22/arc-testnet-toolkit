@@ -3,6 +3,8 @@ BigInt.prototype.toJSON = function() { return this.toString(); };
 
 import { BridgeKit } from "@circle-fin/bridge-kit";
 import { createCircleWalletsAdapter } from "@circle-fin/adapter-circle-wallets";
+import { createViemAdapterFromPrivateKey } from "@circle-fin/adapter-viem-v2";
+import { createSolanaAdapterFromPrivateKey } from "@circle-fin/adapter-solana";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -11,53 +13,61 @@ const circleAdapter = createCircleWalletsAdapter({
   entitySecret: process.env.CIRCLE_ENTITY_SECRET,
 });
 
+const castAdapter = createViemAdapterFromPrivateKey({
+  privateKey: process.env.CAST_PRIVATE_KEY,
+});
+
+const solAdapter = createSolanaAdapterFromPrivateKey({
+  privateKey: process.env.SOLANA_PRIVATE_KEY,
+});
+
 const kit = new BridgeKit();
 
-// === Bridge 1: Wallet1 (Circle 托管钱包) ===
-console.log("=== Bridge: Wallet1 → Arc (1 USDC) ===");
-try {
-  const r1 = await kit.bridge({
-    from: { adapter: circleAdapter, chain: "Ethereum_Sepolia", address: process.env.WALLET1_ADDRESS },
-    to: { adapter: circleAdapter, chain: "Arc_Testnet", address: process.env.WALLET1_ADDRESS },
-    token: "USDC",
-    amount: "1",
-  });
-  console.log("Result:", JSON.stringify(r1, null, 2));
-} catch (err) {
-  console.error("Wallet1 bridge failed:", err?.response?.data || err.message);
+let ok = 0, fail = 0;
+
+async function bridge(name, from, to) {
+  console.log(`\n=== ${name} ===`);
+  try {
+    const r = await kit.bridge({ from, to, token: "USDC", amount: "1" });
+    const steps = r.steps.map(s => `${s.name}:${s.state}`).join(" → ");
+    console.log(`✓ ${steps}`);
+    if (r.steps.find(s => s.explorerUrl)) {
+      r.steps.filter(s => s.explorerUrl).forEach(s => console.log(`  ${s.name}: ${s.explorerUrl}`));
+    }
+    ok++;
+  } catch (err) {
+    console.error(`✗ ${err?.response?.data?.message || err.message}`);
+    fail++;
+  }
 }
 
-// === Bridge 2: Wallet2 (Circle 托管钱包) ===
-console.log("\n=== Bridge: Wallet2 → Arc (1 USDC) ===");
-try {
-  const r2 = await kit.bridge({
-    from: { adapter: circleAdapter, chain: "Ethereum_Sepolia", address: process.env.WALLET2_ADDRESS },
-    to: { adapter: circleAdapter, chain: "Arc_Testnet", address: process.env.WALLET2_ADDRESS },
-    token: "USDC",
-    amount: "1",
-  });
-  console.log("Result:", JSON.stringify(r2, null, 2));
-} catch (err) {
-  console.error("Wallet2 bridge failed:", err?.response?.data || err.message);
-}
+// --- Direction 1: Sepolia → Arc (Circle Wallets) ---
+await bridge("Bridge 1: Wallet1 Sepolia → Arc (1 USDC)",
+  { adapter: circleAdapter, chain: "Ethereum_Sepolia", address: process.env.WALLET1_ADDRESS },
+  { adapter: circleAdapter, chain: "Arc_Testnet", address: process.env.WALLET1_ADDRESS },
+);
 
-// === Bridge 3: Cast 钱包 ===
-// NOTE: createViemAdapterFromPrivateKey fails on Windows (RPC error 156001).
-// Workaround: bridge W1 -> W1 on Arc, then transfer W1 -> Cast on Arc.
-// See bridge-cast-workaround.mjs for the full working script.
-console.log("\n=== Bridge: W1(Sepolia) → W1(Arc) for Cast (1 USDC) ===");
-try {
-  const r3 = await kit.bridge({
-    from: { adapter: circleAdapter, chain: "Ethereum_Sepolia", address: process.env.WALLET1_ADDRESS },
-    to: { adapter: circleAdapter, chain: "Arc_Testnet", address: process.env.WALLET1_ADDRESS },
-    token: "USDC",
-    amount: "1",
-  });
-  console.log("Result:", JSON.stringify(r3, null, 2));
-  console.log("\nNOTE: Run bridge-cast-workaround.mjs to transfer from W1 to Cast on Arc.");
-} catch (err) {
-  console.error("Cast bridge failed:", err?.response?.data || err.message);
-}
+await bridge("Bridge 2: Wallet2 Sepolia → Arc (1 USDC)",
+  { adapter: circleAdapter, chain: "Ethereum_Sepolia", address: process.env.WALLET2_ADDRESS },
+  { adapter: circleAdapter, chain: "Arc_Testnet", address: process.env.WALLET2_ADDRESS },
+);
 
-console.log("\n=== Bridges submitted! ===");
-console.log("ETH Sepolia confirmations take ~15 minutes.");
+// --- Direction 2: Solana → Arc ---
+await bridge("Bridge 3: Solana → Arc (1 USDC)",
+  { adapter: solAdapter, chain: "Solana_Devnet" },
+  { adapter: castAdapter, chain: "Arc_Testnet" },
+);
+
+// --- Direction 3: Arc → Sepolia ---
+await bridge("Bridge 4: Arc → Sepolia (1 USDC)",
+  { adapter: castAdapter, chain: "Arc_Testnet" },
+  { adapter: castAdapter, chain: "Ethereum_Sepolia" },
+);
+
+// --- Direction 4: Arc → Solana ---
+await bridge("Bridge 5: Arc → Solana (1 USDC)",
+  { adapter: castAdapter, chain: "Arc_Testnet" },
+  { adapter: solAdapter, chain: "Solana_Devnet" },
+);
+
+console.log(`\n=== Done! ${ok} succeeded, ${fail} failed ===`);
