@@ -19,6 +19,7 @@ A complete, reproducible toolkit for interacting with [Arc Network](https://arc.
 | **arc-modular-wallets** | MSCA modular wallets (ERC-6900) | `modular-wallets.mjs` |
 | **arc-stablecoin-ops** | Stablecoin extended ops (EURC/Permit2/FxEscrow) | `stablecoin-ops.mjs` |
 | **arc-usyc** | USYC tokenized yield (subscribe/redeem) | `usyc-interact.mjs` |
+| **arc-ai-agent** | ERC-8004 AI Agent registration: identity, reputation, validation | `ai-agent-register.mjs` |
 | **arc-full** | Orchestration guide for running all modules in sequence | (instructions only) |
 
 ## Total On-chain Activity
@@ -32,7 +33,8 @@ A complete, reproducible toolkit for interacting with [Arc Network](https://arc.
 - ~16 XyloNet DeFi transactions (Tip/Swap/Deposit/Bridge/LP)
 - ~6 Nanopayments (deposit + 3 x402 payments + withdraw)
 - ~8 monitor setup + trigger transactions
-- **~81 total transactions**
+- ~9 ERC-8004 AI Agent (register + reputation + validation, Cast + SCA)
+- **~90 total transactions**
 
 ## Prerequisites
 
@@ -76,6 +78,8 @@ Each module contains a `SKILL.md` with step-by-step instructions and standalone 
 - Solana adapter: `@circle-fin/adapter-solana`, export `createSolanaAdapterFromPrivateKey`
 - Solana directions need SOL gas even for Arc→Solana (mint tx executes on Solana)
 - BigInt serialization fix needed: `BigInt.prototype.toJSON = function() { return this.toString(); };`
+- ERC-8004 requires owner ≠ validator (cannot self-report reputation)
+- Cast version needs a separate Validator EOA with native USDC for gas
 
 ## License
 

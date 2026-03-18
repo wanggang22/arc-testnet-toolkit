@@ -76,6 +76,14 @@ Each phase corresponds to an independent skill and can be called separately.
 16. Import Foundry contracts to Circle, create 4 event monitors
 17. Trigger a transaction → verify webhook notification
 
+### Phase 8: AI Agent Registration (`/arc-ai-agent`)
+18. ERC-8004 AI Agent onchain identity — **Cast ~5 tx + SCA ~4 tx**:
+    - Contracts: IdentityRegistry / ReputationRegistry / ValidationRegistry
+    - Cast version: New Validator EOA → transfer gas → register → giveFeedback → validationRequest → validationResponse
+    - SCA version: Circle API creates 2 SCA wallets → auto-completes all 4 steps
+    - ERC-8004 requires owner ≠ validator (no self-dealing)
+    - Cast Validator EOA needs native USDC for gas (1 USDC is enough)
+
 ## Required .env Variables
 
 ```
@@ -114,6 +122,7 @@ SCA_AIRDROP=0x...
 - **Solana adapter**: Package `@circle-fin/adapter-solana`, export `createSolanaAdapterFromPrivateKey`
 - **Solana gas**: Even Arc→Solana needs SOL on destination (mint tx on Solana)
 - **SCP SDK monitors**: Broken, use direct fetch API (`/v1/w3s/contracts/monitors`)
+- **ERC-8004**: Owner ≠ validator required; Cast version needs separate Validator EOA with USDC gas
 
 ## Total Interactions (tested)
 - Foundry deploy: 5 tx
@@ -125,4 +134,5 @@ SCA_AIRDROP=0x...
 - XyloNet: ~16 tx (Tip/Swap/Deposit/Bridge/LP)
 - Nanopayments: ~6 tx (deposit + 3 x402 payments + withdraw)
 - Monitor: ~8 tx (import + monitors + trigger)
-- **Total ~81 on-chain interactions**
+- ERC-8004 AI Agent: ~9 tx (Cast 5 + SCA 4)
+- **Total ~90 on-chain interactions**
